@@ -18,7 +18,7 @@ and the program runs by loading data that has been saved in a text file.
 
 The program runs on a console, and was developed using Eclipse.
 
-## Executing Code
+## Executing the Code
 
 Once the source code has been downloaded, navigate to the directory and enter the following:
 
@@ -33,23 +33,32 @@ You should get a screen as follows:
 
 ![Menu Screen](https://raw.githubusercontent.com/s3664099/videolibrary/master/img/menu.png)
 
+The options are self explanatory, with the exception of 'Seed Data', which will fill the program with pre-determined, hard-coded data.
+
+## Upgrades
+
+1. The Code isn't able to load the data from the .txt files
+
+2. There seems to be some hard-coded numbers
+
+3. We can probably reduce the size of some of the methods
+
+## Notes
+
+We were not allowed to use array lists, or any of the other lists, for this particular assignment, which means that
+we could only use arrays, which are immutable once they have been set up. I won't be changing this since I want to leave this
+code as close to what I originally submitted, and only make minor changes to make the code more readable, or resiliant.
+
+## Code Walkthrough
+
+While there are notes on each of the classes, I'll give a brief rundown of each of them here, which will also
+help with me going over it and tidying things up.
+
+**Driver.java**
+This class simply starts the program running. The reason for its existence is that our lecturer indicated that
+we needed to get away from the static part of the main program loop. Mind you, this is one of the reasons
+that I don't like Java, and there are many many more to come.
+
+**MovieMaster.java**
 
 
-This is the second assignment for my Programming Techniques course.
-The code isn't the best, especially since going over it I have noticed that I
-have hard-coded a lot of numbers in to it.
-It probably does need fixing, however I have fixed up pretty much all of the problems
-that the marker identified and as such it is probably best to move on to another project.
-
-This program runs on the console and is designed as a rental system for a video/game library.
-It adds movies and games to the database, and also allows for borrowing and returning the items,
-creating a hire record as it goes.
-
-It is the first object orientated program that I have written, at least in an official capacity.
-
-The program also allows for the data to be saved as a text file, and then reloaded back into
-memory. The program, upon start up, will initially search for any files and if none are found
-will then generate an empty database.
-
-Since we were not allowed to use array lists in this assignment, we have had to use arrays, which
-in Java are immutible once they are created.
