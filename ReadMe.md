@@ -31,7 +31,7 @@ you run the code as follows:
 
 You should get a screen as follows:
 
-![Menu Screen](https://github.com/s3664099/videolibrary/edit/master/img/menu.png)
+![Menu Screen](https://raw.githubusercontent.com/s3664099/videolibrary/master/img/menu.png)
 
 
 
