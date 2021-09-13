@@ -1,6 +1,7 @@
 /* Class: Item
  * Description: Class representing hireable items
  * Author: David Sarkies - 3664099
+ * Version: 2.0
  */
 
 public abstract class Item {
@@ -121,6 +122,7 @@ public abstract class Item {
 	// Hire Item method
 	public double hireItem(String customerID, DateTime date) throws BorrowException, IdException
 	{
+		// checks if the customer id is valid
 		if (customerID.length()!=3)
 		{
 			throw new IdException ("Error - invalid Customer ID");

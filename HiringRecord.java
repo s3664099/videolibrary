@@ -1,8 +1,9 @@
 /*
- * Class - Hiring Record
- * Description - represents a single record for any
+ * CLASS - Hiring Record
+ * DESCRIPTION - represents a single record for any
  * 				 item that can be hired
- * Author - David Sarkies s3664099
+ * AUTHOR - David Sarkies s3664099
+ * VERSION - 2.0
  */
 
 public class HiringRecord {

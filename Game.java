@@ -1,6 +1,7 @@
 /* CLASS: Game
  * DESCRIPTION: Subclass of Item that manages Games
  * AUTHOR: David Sarkies - s366409
+ * Version: 2.0
  */
 
 public class Game extends Item {

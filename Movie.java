@@ -1,6 +1,7 @@
 /* CLASS: Movie
  * DESCRIPTION: Subclass of item that manages the hireable item movie
  * AUTHOR: David Sarkies s3664099
+ * Version: 2.0
  */
 
 public class Movie extends Item {

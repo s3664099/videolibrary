@@ -1,6 +1,21 @@
 /* CLASS - MovieMaster
  * DESCRIPTION - Main Class from which the program runs
  * AUTHOR - David Sarkies s3664099
+ * VERSION - 2.0
+ */
+
+/* TODO: Create new classes for the methods that are called from the movie master
+ *       Class - Add Item, Borrow Item, Return Item are the same
+ *       class. 
+ *       create the item object, which is then passed into the class once the data has
+ *       been seeded. This is done with the initial load, so that when the data is seeded,
+ *       the file is grabbed from the class, written to, and then passed back into the class
+ *       Seed movies should be in the add item class
+ *       EnterID method needs to be accessed from outside the class
+ *       YesOrNo method as well
+ *       File read/write
+ * TODO: Complete the MovieMaster class in the readme
+ * TODO: The methods return the strings and is displayed in the main class
  */
 
 import java.util.InputMismatchException;
@@ -17,6 +32,8 @@ public class MovieMaster {
 	
 	private boolean codeInUse = false;
 	private int itemLocated=0;
+	private int itemArraySize = 30;
+	private boolean seeded = false;
 	
 	// Strings and Variables for persistence writing
 	private String fileName = "Movie_Master.txt";
@@ -27,37 +44,40 @@ public class MovieMaster {
 	
 	// create array for movies (limited to 30, since we were not allowed
 	// to use array lists in this assignment
-	private Item[] Item = new Item[30];
+	private Item[] Item = new Item[itemArraySize];
 	
 	//main method
 	public void movieMaster()
 	{	
 		
-		//attempts to load backup file
-		fileLoad(fileName);
+		try {
+			//attempts to load backup file
+			fileLoad(fileName);
+		} catch (AlreadySeededException | FileNotFoundException e) {
+			System.err.println(e.getMessage());
+		}
 		
 		//if first attempt fails, attempt to load backup
 		//checks if there is a single item. If there is no item there
 		// (namely because it is null) then it assumes that the backup load
 		// failed so attempts to load a backup of the backup file
-		
-		if (Item[0]==null)
-		{
-			fileLoad(backupFileName);
-		}
-		
-		//if backup attempt fails, based on a null value in the item collection
-		//informs the user that there will be no preloaded objects in the system
-		
-		if (Item[0]==null)
-		{
-			System.out.println("Error - Program executed " +
+		// Enclosed in a try/catch statement to handle the errors
+		try {
+			if (Item[0]==null)
+			{
+				fileLoad(backupFileName);
+			}
+		} catch (AlreadySeededException e) {
+			System.err.println(e.getMessage());
+		}	catch (FileNotFoundException e) {
+			System.err.println(e.getMessage());
+			System.err.println("Error - Program executed " +
 					"without any pre-loaded objects");
+			
 		}
 		
 		//executes the menu method, which is the main method
 		//for the system
-		
 		menu();
 
 	}
@@ -88,34 +108,51 @@ public class MovieMaster {
 			
 			switch(s)
 			{
+			
+			//Adds Item
 			case "a":
 				try {
 					addItem();
-				} catch (IdException e) {
-					System.out.println(e.getMessage());
+				} catch (IdException | ArrayFullException e) {
+					System.err.println(e.getMessage());
 				}
 				break;
+				
+			//Borrow Item
 			case "b":
 				try {
 					borrowItem();
 				} catch (BorrowException | IdException e) {
-					System.out.println(e.getMessage());
+					System.err.println(e.getMessage());
 				}
 				break;
+			
+			//Return Item
 			case "c":
 				try {
 					returnItem();
 				} catch (BorrowException | IdException e) {
-					System.out.println(e.getMessage());
+					System.err.println(e.getMessage());
 				}
 				break;
+			
+			//Display Item
 			case "d":
 				displayItem();
 				break;
+			
+			//Seed Movies
 			case "e":
-				seedMovies();
+				try {
+					seedMovies();
+					seeded = true;
+				} catch (ArrayFullException | AlreadySeededException e) {
+					System.err.println(e.getMessage());
+				} 
 				break;
-			case "x": // Exit system
+			
+			//Exit System
+			case "x": 
 				
 				//sets the exit flag so that the system will break out of the
 				//while loop.
@@ -130,8 +167,11 @@ public class MovieMaster {
 			}	
 		}while (!exitFlag);
 	}
-	
-	// Add Item method
+
+	//Method for adding an item to the library
+	//Throws an exception if there is an ID that is already being used
+	// A part of the assignment required us to submit and 'algorithm' with the
+	// Final code.
 	
 	/*
 	 * ALGORITHM
@@ -204,10 +244,9 @@ public class MovieMaster {
 	 * 		Movie Typhoon created
 	 */
 	
-	private void addItem() throws IdException
+	private void addItem() throws IdException, ArrayFullException
 	{
 		String code;
-		
 		//ask for item details and store in variable/strings
 		//create items by passing details into constructor
 		
@@ -245,8 +284,9 @@ public class MovieMaster {
 					// For Movies
 					if (type.equalsIgnoreCase("m"))
 					{
+						// Sets Code - movie codes begin with an M
 						correct=true;
-						code = "M_"+code; // Sets Code
+						code = "M_"+code; 
 						boolean isNewRelease=false;
 						
 						// Sets whether New Release or Weekly
@@ -272,7 +312,7 @@ public class MovieMaster {
 						// for games
 					} else if (type.equalsIgnoreCase("g")) {
 
-						// Sets code
+						// Sets code - game codes begin with a G
 						code = "G_"+code; 
 						correct=true;
 								
@@ -293,11 +333,17 @@ public class MovieMaster {
 						System.out.println("Error - invalid entry");
 					}
 				} while (!correct);
+				
+			//Throws an exception if the array is full	
+			} else {
+				throw new ArrayFullException ("Unable to add item, array is full");
 			}
 		}
 	}
 
-	// Borrow item method
+	// Borrow item method. 
+	//Throws one of two exceptions - either unable to borrow or there is a problem 
+	//with the ID
 	private void borrowItem() throws BorrowException, IdException
 	{
 		String code;
@@ -351,7 +397,10 @@ public class MovieMaster {
 		System.out.println("The due date is "+date.getFormattedDate());
 	}
 		
+	
 	// return item method
+	// like the above methods, has one of two exceptions - borrow problem and
+	// id problem
 	private void returnItem() throws BorrowException, IdException
 	{
 		String code;
@@ -425,112 +474,113 @@ public class MovieMaster {
 	}
 	
 	// Seed Movies
-	private void seedMovies()
+	private void seedMovies() throws ArrayFullException, AlreadySeededException
 	// checks to see if movies already seeded
 	{
 
-		if (Item[0] !=null)	
+		if (seeded)	
 		{	
-			// if seeded prints error message
-			System.out.println("Error: The movies have already been seeded");
-			return;
+			// if seeded throws an error
+			throw new AlreadySeededException ("Error - list already seeded");
 		} 
 		
 		try {
-		// creates 10 movies and 4 games as requested
-		Item m = new Movie("M_TRM", "The Terminator", 
-				"A soldier goes back in time to save the woman he loves", 
-				"Romance", false);
-		Item[0] = m;
-		m = new Movie("M_MTX", "The Matrix", 
+			// creates 10 movies and 4 games as requested
+			Item m = new Movie("M_TRM", "The Terminator", 
+					"A soldier goes back in time to save the woman he loves", 
+					"Romance", false);
+			Item[0] = m;
+			m = new Movie("M_MTX", "The Matrix", 
 				"A depressed office worker joins a cult " +
 				"and destabilises the government", 
 				"Sci-Fi", false);
-		Item[1] = m;
-		Item[1].hireItem("MYF", new DateTime(-1));
-		m = new Movie("M_TKN", "Taken", "A dad goes to pick " +
+			Item[1] = m;
+			Item[1].hireItem("MYF", new DateTime(-1));
+			m = new Movie("M_TKN", "Taken", "A dad goes to pick " +
 				"up his daughter", "Action", false);
-		Item[2] = m;
-		Item[2].hireItem("TOM", new DateTime(-15));
-		DateTime returnDate = new DateTime(-10);
-		Item[2].returnItem(returnDate);
-		m = new Movie("M_SHN", "The Shining", 
+			Item[2] = m;
+			Item[2].hireItem("TOM", new DateTime(-15));
+			DateTime returnDate = new DateTime(-10);
+			Item[2].returnItem(returnDate);
+			m = new Movie("M_SHN", "The Shining", 
 				"A family's first AirBNB experience goes horribly wrong",
 				"Thriller", false);
-		Item[3] = m;
-		Item[3].hireItem("PET", new DateTime(-35));
-		returnDate = new DateTime(-25);
-		Item[3].returnItem(returnDate);
-		m = new Movie("M_RBC", "Robo-cop", 
+			Item[3] = m;
+			Item[3].hireItem("PET", new DateTime(-35));
+			returnDate = new DateTime(-25);
+			Item[3].returnItem(returnDate);
+			m = new Movie("M_RBC", "Robo-cop", 
 				"A pure-hearted man is murdered and days later is " +
 				"resurrected with a message for mankind",
 				"Sci-fi", false);
-		Item[4] = m;
-		Item[4].hireItem("FRK", new DateTime(-60));
-		returnDate = new DateTime(-50);
-		Item[4].returnItem(returnDate);
-		Item[4].hireItem("CRL", new DateTime(-20));
-		m = new Movie("M_TLJ", "Star Wars - The Last Jedi", 
+			Item[4] = m;
+			Item[4].hireItem("FRK", new DateTime(-60));
+			returnDate = new DateTime(-50);
+			Item[4].returnItem(returnDate);
+			Item[4].hireItem("CRL", new DateTime(-20));
+			m = new Movie("M_TLJ", "Star Wars - The Last Jedi", 
 				"An aging wizard comes out of hiding to " +
 				"play a prank on his nephew", "Sci-fi", true);
-		Item[5] = m;
-		m= new Movie("M_ICP", "Inception", 
+			Item[5] = m;
+			m= new Movie("M_ICP", "Inception", 
 				"An hour and a half of watching people sleep", 
 				"Sci-fi", true);
-		Item[6] = m;
-		Item[6].hireItem("ALR", new DateTime(-3));
-		m = new Movie("M_TRG", "Thor - Ragnarok", 
+			Item[6] = m;
+			Item[6].hireItem("ALR", new DateTime(-3));
+			m = new Movie("M_TRG", "Thor - Ragnarok", 
 				"A man destroys his planet because he does not " +
 				"want to share it with his sister after she broke his " +
 				"favourite toy",
 				"Sci-Fi", true);
-		Item[7] = m;
-		Item[7].hireItem("JHN", new DateTime(-6));
-		returnDate = new DateTime(-5);
-		Item[7].returnItem(returnDate);
-		m = new Movie("M_AIW", "Avengers - Infinity War", 
+			Item[7] = m;
+			Item[7].hireItem("JHN", new DateTime(-6));
+			returnDate = new DateTime(-5);
+			Item[7].returnItem(returnDate);
+			m = new Movie("M_AIW", "Avengers - Infinity War", 
 				"A team of misfits try to stop a guy from over-blinging his glove",
 				"Sci-fi", true);
-		Item[8] = m;
-		Item[8].hireItem("CRL", new DateTime(-9));
-		returnDate = new DateTime(-6);
-		Item[8].returnItem(returnDate);
-		m = new Movie("M_AAU", "Avengers - Age of Ultron", 
+			Item[8] = m;
+			Item[8].hireItem("CRL", new DateTime(-9));
+			returnDate = new DateTime(-6);
+			Item[8].returnItem(returnDate);
+			m = new Movie("M_AAU", "Avengers - Age of Ultron", 
 				"A team of misfits try to solve the world's problems " +
 				"by creating new ones",
 				"Sci-fi", true);
-		Item[9] = m;
-		Item[9].hireItem("ERN", new DateTime(-10));
-		returnDate = new DateTime(-7);
-		Item[9].returnItem(returnDate);
-		Item[9].hireItem("FRK", new DateTime(-2));
-		Game g = new Game("G_CIV", "Civilisation VII", 
+			Item[9] = m;
+			Item[9].hireItem("ERN", new DateTime(-10));
+			returnDate = new DateTime(-7);
+			Item[9].returnItem(returnDate);
+			Item[9].hireItem("FRK", new DateTime(-2));
+			Game g = new Game("G_CIV", "Civilisation VII", 
 				"Develop your management skills",
 				"Strategy", "PC");
-		Item[10] = g;
-		g = new Game("G_COD", "Call of Duty V", 
+			Item[10] = g;
+			g = new Game("G_COD", "Call of Duty V", 
 				"Experience the Army",
 				"Shoot-em-up", "X-Box, PC, Playstation");
-		Item[11] = g;
-		Item[11].hireItem("PET", new DateTime(-10));
-		((Game) Item[11]).setExtended();
-		g = new Game("G_ZRK", "Zork Trilogy", 
+			Item[11] = g;
+			Item[11].hireItem("PET", new DateTime(-10));
+			((Game) Item[11]).setExtended();
+			g = new Game("G_ZRK", "Zork Trilogy", 
 				"Experience gaming in the 80s",
 				"Old-Skool", "PC");
-		Item[12] = g;
-		Item[12].hireItem("ERN", new DateTime(-30));
-		returnDate = new DateTime(-11);
-		Item[12].returnItem(returnDate);
-		g = new Game("G_SRM", "Sky-Rim", 
+			Item[12] = g;
+			Item[12].hireItem("ERN", new DateTime(-30));
+			returnDate = new DateTime(-11);
+			Item[12].returnItem(returnDate);
+			g = new Game("G_SRM", "Sky-Rim", 
 				"Escape from reality",
 				"RPG", "PC, Playstation");
-		Item[13] = g;
-		Item[13].hireItem("TRI", new DateTime(-50));
-		((Game) Item[13]).setExtended();
-		returnDate = new DateTime(-45);
-		Item[13].returnItem(returnDate);
+			Item[13] = g;
+			Item[13].hireItem("TRI", new DateTime(-50));
+			((Game) Item[13]).setExtended();
+			returnDate = new DateTime(-30);
+			Item[13].returnItem(returnDate);
 		} catch (BorrowException | IdException e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new ArrayFullException ("Unable to add item, array is full");
 		}
 	}
 	
@@ -583,7 +633,7 @@ public class MovieMaster {
 			{
 				return Query;
 			} else {
-				System.out.println("Error - Please enter Y or N");
+				System.err.println("Error - Please enter Y or N");
 			}
 		}while(!validEntry);
 		
@@ -593,9 +643,11 @@ public class MovieMaster {
 	// Create persistent file upon closing program
 	private void fileWrite()
 	{
-		PrintWriter outputStream=null;
-		String output="";
 		
+		//Creates the output stream and records the seeded value
+		PrintWriter outputStream=null;
+		String output="Seeded: "+seeded+"\t\n:";
+				
 		//creates string to write to file
 		try {
 			
@@ -608,8 +660,8 @@ public class MovieMaster {
 					continue;
 				} else {
 					
-					output = output + Output(i);
-					
+					//Calls function to write output
+					output = output + Output(i);		
 				}
 			} 
 			
@@ -663,7 +715,7 @@ public class MovieMaster {
 	}
 	
 	//Reload data from persistent file
-	private void fileLoad(String fileToLoad)
+	private void fileLoad(String fileToLoad) throws AlreadySeededException, FileNotFoundException
 	{
 		Scanner inputStream = null; // create object variable
 		
@@ -672,11 +724,10 @@ public class MovieMaster {
 			inputStream = new Scanner (new File(fileToLoad));
 			inputStream.useDelimiter(":");
 			
-		} catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			//if no file found, an error is thrown
-			System.out.println("Error - file "+fileToLoad+" not found");
-			return;
+			throw new FileNotFoundException ("Error - file "+fileToLoad+" not found");
+			
 		}
 		
 		int i=0;
@@ -689,10 +740,29 @@ public class MovieMaster {
 		{
 			String code = inputStream.next();
 			
+			//Checks the seeded value that is stored at the beginning with the seeded value
+			if (code.equals("Seeded")) {
+				
+				String seededvalue = inputStream.next();
+				
+				//If it is true, and program has already been seeded, then an error is thrown
+				if (seeded && seededvalue == "true") {
+					throw new AlreadySeededException ("Error - unable to load file as already seeded");
+				} else {
+					
+					//Otherwise it records the value in the seeded variable.
+					if (seededvalue == "true") {
+						seeded = true;
+					} else {
+						seeded = false;
+					}
+				}
+			
+			
 			//Checks if it is a hire code or item code
 			//if the code begins with '#' then it is a hire record
-			if (code.startsWith("#"))
-			{
+			} else if (code.startsWith("#")) {
+				
 				//Hire Code
 				code = code.replace("#","");
 				

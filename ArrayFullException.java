@@ -4,9 +4,9 @@
  * Version: 2.0
  */
 
-public class BorrowException extends Exception {
+public class ArrayFullException extends Exception {
 	
-	public BorrowException(String message) {
+	public ArrayFullException(String message) {
 		super (message);
 	}
 

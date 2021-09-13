@@ -4,9 +4,9 @@
  * Version: 2.0
  */
 
-public class BorrowException extends Exception {
+public class NoValidFileException extends Exception {
 	
-	public BorrowException(String message) {
+	public NoValidFileException(String message) {
 		super (message);
 	}
 

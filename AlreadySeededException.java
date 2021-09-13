@@ -4,9 +4,9 @@
  * Version: 2.0
  */
 
-public class BorrowException extends Exception {
+public class AlreadySeededException extends Exception {
 	
-	public BorrowException(String message) {
+	public AlreadySeededException(String message) {
 		super (message);
 	}
 
