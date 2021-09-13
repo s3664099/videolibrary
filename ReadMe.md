@@ -18,7 +18,7 @@ and the program runs by loading data that has been saved in a text file.
 
 The program runs on a console, and was developed using Eclipse.
 
-## Executing Code
+## Executing the Code
 
 Once the source code has been downloaded, navigate to the directory and enter the following:
 
@@ -31,34 +31,42 @@ you run the code as follows:
 
 You should get a screen as follows:
 
-![Menu Screen](https://github.com/s3664099/videolibrary/edit/master/img/menu.png)
+![Menu Screen](https://raw.githubusercontent.com/s3664099/videolibrary/master/img/menu.png)
 
+The options are self explanatory, with the exception of 'Seed Data', which will fill the program with pre-determined, hard-coded data.
 
+## Upgrades
 
-This is the second assignment for my Programming Techniques course.
-The code isn't the best, especially since going over it I have noticed that I
-have hard-coded a lot of numbers in to it.
-It probably does need fixing, however I have fixed up pretty much all of the problems
-that the marker identified and as such it is probably best to move on to another project.
+1. ~~The Code isn't able to load the data from the .txt files~~ When the program is first run, it fails, but works afterwards.
 
-This program runs on the console and is designed as a rental system for a video/game library.
-It adds movies and games to the database, and also allows for borrowing and returning the items,
-creating a hire record as it goes.
+2. ~~There seems to be some hard-coded numbers~~
 
-It is the first object orientated program that I have written, at least in an official capacity.
+3. We can probably reduce the size of some of the methods
 
-The program also allows for the data to be saved as a text file, and then reloaded back into
-memory. The program, upon start up, will initially search for any files and if none are found
-will then generate an empty database.
+4. ~~In MovieMaster, addItem() throw an exception for when the list is full~~
 
-Since we were not allowed to use array lists in this assignment, we have had to use arrays, which
-in Java are immutible once they are created.
+## Notes
 
-## Classes
+We were not allowed to use array lists, or any of the other lists, for this particular assignment, which means that
+we could only use arrays, which are immutable once they have been set up. I won't be changing this since I want to leave this
+code as close to what I originally submitted, and only make minor changes to make the code more readable, or resiliant.
+
+Some of the files include psuedo-code. This was a requirement in the assignment, and is actually something that I should do more
+often as opposed to just jumping in and coding. It would make things a lot easier. Then again, old habits die very hard, especially
+since I picked up some of these bad habits as a kid.
+
+## Code Walkthrough
+
+While there are notes on each of the classes, I'll give a brief rundown of each of them here, which will also
+help with me going over it and tidying things up.
+
+### Classes
 
 **Driver Class**
 
-This class exists to run the utility. It creates an instance of the movie master, and then executes it.
+This class simply starts the program running. The reason for its existence is that our lecturer indicated that
+we needed to get away from the static part of the main program loop. Mind you, this is one of the reasons
+that I don't like Java, and there are many many more to come.
 
 **DateTime**
 
@@ -77,8 +85,30 @@ to us by the lecturer for teaching purposes. The methods in this class are as fo
 - setDate() - sets the current date as a specific date
 - setAdvance() - sets the value for the days to be advanced (in seconds)
 
-**Movie Master Class**
+**MovieMaster.java**
 
+This is the main class for the program, and is where the bulk of the operations are called from.
+
+An array with 30 spaces is created to store the movies/games
+
++ *public void movieMaster()*:
+This method is constructor method for the Movie Master object which is called when the object is created 
+(everything in Java is an object, another thing I really don't like about it). When the method is executed
+it will attempt to load the datafile. It then checks to see if the arrays have been filled, and if not
+(meaning that the load failed), it will attempt to load the backup file. If that failed (ie, the item array is
+empty), then the user is informed. The menu method is then called.
+
++ *private void menu()*:
+This runs the main menu for the program. The menu gives the user a number of options, and upon selecting the option, the
+method relating to the option is then called. The menu uses the switch/case to execute the selection. I would prefer to just
+use if/else statements, but I believe this was required in the assignment.
+
++ *private void addItem()*:
+This method adds a new item to the array, if there is any space left in the array. The first task is that it asks for an
+ID for the item, and will throw a custom exception if the ID is being used by another item. Exception is caught in the
+menu. The program then looks for an extra space, and if it has one, it will then ask initial questions, and then whether
+it is a game, or not. Based on the answer, it will ask specific questions. It will then create either a new movie, or game, and
+add it to the item list.
 
 **Item Class**
 This is and abstract class that forms the basis of the rentable items, namely movies & games.
@@ -142,3 +172,4 @@ overridden since if the file fails to load (or doesn't exist), a FileNotFoundExc
 
 ## Expansions
 Include other subclass as DVD, CDs and game consoles 
+
