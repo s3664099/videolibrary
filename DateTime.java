@@ -107,4 +107,19 @@ public class DateTime
 	{
 		advance = ((days * 24L + hours) * 60L) * 60000L;
 	}
+	
+	//turns toString date to integer
+	public DateTime enumerateDate(String dateString)
+	{
+		String year=dateString.substring(0,4);
+		String month=dateString.substring(5,7);
+		String day=dateString.substring(8,10);
+		int yr = Integer.parseInt(year);
+		int mth = Integer.parseInt(month);
+		int dy = Integer.parseInt(day);
+		
+		DateTime date = new DateTime(dy, mth, yr);
+		
+		return date;
+	}
 }

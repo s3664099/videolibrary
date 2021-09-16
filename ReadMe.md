@@ -37,11 +37,11 @@ The options are self explanatory, with the exception of 'Seed Data', which will 
 
 ## Upgrades
 
-1. ~~The Code isn't able to load the data from the .txt files~~ When the program is first run, it fails, but works afterwards.
+1. ~~The Code isn't able to load the data from the .txt files When the program is first run, it fails, but works afterwards.~~
 
 2. ~~There seems to be some hard-coded numbers~~
 
-3. We can probably reduce the size of some of the methods
+3. ~~We can probably reduce the size of some of the methods~~
 
 4. ~~In MovieMaster, addItem() throw an exception for when the list is full~~
 
@@ -84,6 +84,7 @@ to us by the lecturer for teaching purposes. The methods in this class are as fo
 - diffDays() - returns the number of days between two dates
 - setDate() - sets the current date as a specific date
 - setAdvance() - sets the value for the days to be advanced (in seconds)
+- enumerateDate() - turns a date that is a string into a date.
 
 **MovieMaster.java**
 
@@ -91,24 +92,27 @@ This is the main class for the program, and is where the bulk of the operations 
 
 An array with 30 spaces is created to store the movies/games
 
-+ *public void movieMaster()*:
-This method is constructor method for the Movie Master object which is called when the object is created 
-(everything in Java is an object, another thing I really don't like about it). When the method is executed
-it will attempt to load the datafile. It then checks to see if the arrays have been filled, and if not
-(meaning that the load failed), it will attempt to load the backup file. If that failed (ie, the item array is
-empty), then the user is informed. The menu method is then called.
+- public void movieMaster() - This method is constructor method for the Movie Master object which is called when the object is created (everything in Java is an object, another thing I really don't like about it). When the method is executed it will attempt to load the datafile. It then checks to see if the arrays have been filled, and if not (meaning that the load failed), it will attempt to load the backup file. If that failed (ie, the item array is empty), then the user is informed. The menu method is then called.
 
-+ *private void menu()*:
-This runs the main menu for the program. The menu gives the user a number of options, and upon selecting the option, the
-method relating to the option is then called. The menu uses the switch/case to execute the selection. I would prefer to just
-use if/else statements, but I believe this was required in the assignment.
+- private void menu() - This runs the main menu for the program. The menu gives the user a number of options, and upon selecting the option, the method relating to the option is then called. The menu uses the switch/case to execute the selection. I would prefer to just use if/else statements, but I believe this was required in the assignment.
 
-+ *private void addItem()*:
-This method adds a new item to the array, if there is any space left in the array. The first task is that it asks for an
-ID for the item, and will throw a custom exception if the ID is being used by another item. Exception is caught in the
-menu. The program then looks for an extra space, and if it has one, it will then ask initial questions, and then whether
-it is a game, or not. Based on the answer, it will ask specific questions. It will then create either a new movie, or game, and
-add it to the item list.
+**ManageLibrary Class**
+
+This class was created to handle the methods that manage the item array. The array is passed through to the class and is stored here, and since the list is passed by reference, and alterations to the list outside the class is also made to the array in this class.
+
+- private void addItem() - This method adds a new item to the array, if there is any space left in the array. The first task is that it asks for an ID for the item, and will throw a custom exception if the ID is being used by another item. Exception is caught in the menu. The program then looks for an extra space, and if it has one, it will then ask initial questions, and then whether it is a game, or not. Based on the answer, it will ask specific questions. It will then create either a new movie, or game, and add it to the item list.
+
+- borrowItem() - This method will perform checks to see if it can be borrowed, and will then change the status of the item from available to on loan. The method will also add the details to the item regarding the loan, who has borrowed it, and any fees that are applicable, as well as item specific varibles (such as extended loan for games).
+
+- returnItem() - This method is designed to return the status of the item from on loan to available. Performs checks to see if the item exists, and is on load, and if it is on loan, it then reverts the status back to available. It will also determine if any late fees apply, and how much they are, and they will then record the late fees (the system isn't so sophisticated that late fees paid are recorded, but it can be extended to do it).
+
+- getDays() - This method is an input method that is used to take a numerical input from the user regarding the number of days that the item has been on loan. The main reason for the method is to make sure that a correct numerical input is entered and to prevent the program from crashing is a non-integer is entered, or a number less that 0 is entered.
+
+- displayItem() - This method will display the details of the items in the array. It goes through the array, and if an item is recorded in the array it will then display it to the screen.
+
+- enterId() - This method is used to validate the three letter id that is entered for the item. It is designed to catch any inproper entry and prevent the program from crashing. It also makes sure that only three letter ids are entered. This method also converts the id to upper case, to make the entry case insensitive.
+
+- yesOrNo() - This method is used to capture a yes or no answer. It only takes the first letter, and it will ignore the case so that the user can enter it in either upper case or lower case.
 
 **Item Class**
 This is and abstract class that forms the basis of the rentable items, namely movies & games.
@@ -146,6 +150,13 @@ This is the other subclass for the items. New variable is whether extended hire 
 - getRentalFee() - returns the details of the rental fee upon hiring the object.
 - getRentalPeriod() - returns the details of the rental period.
 
+**SetUp class**
+This class exists to simply set up the item list, and also contains the load/save methods (or file handing). The class takes the item array, which is passed by reference, meaning that it does not need to be passed back.
+- seedMovies() - this method takes a boolean which is used to determine whether the list has already been seeded. It basically generates a number of items and populates the array. It is basically used for testing. If the array has already been seeded then an exception is thrown.
+- fileWrite() - this method will take the name of the file that is to be created, a boolean indicating whether the array has been seeded or not, and a backup file name. It will then take the item array and convert the information into a string which will be written to file as a text file. The text file is set up in a way so that the fileLoad method can then read the information on the document and populate the array.
+- output() - this is a helper method that is used to convert the information in the array into a string format that can then be reloaded back into the program when the program is started up again.
+- fileLoad() - this method takes the name of the file that is to be loaded, as well as a boolean that will indicate whether the array has been seeded or not (though at this stage this is unlikely to be the case). It will load the file, and then proceed to populate the array of items with the information that has been loaded. It will also take a boolean that will indicate whether the file has been seeded or not.
+
 **Borrow Exception**
 This is a custom exception that returns a message as an exception (as opposed to simply a string). This is generated when a item that can't be borrowed is attempted to be borrowed.
 
@@ -169,7 +180,14 @@ overridden since if the file fails to load (or doesn't exist), a FileNotFoundExc
 - 9 Sept 21 - Added some more custom exceptions, and moved some of the try catches around, and well as the exceptions. Considered
   A yes/no exception, but that would break the user out of the loop that keeps them in until the correct response is ended. Change
   the printing of the error from System.out.println to System.err.println
+- 16 Sept 21 - Removed methods from the movieMaster class and created a class to manage the item list, and a class to setUp and save
+  the item list. Completed the documentation.
 
 ## Expansions
-Include other subclass as DVD, CDs and game consoles 
+Make some of the methods smaller, particularly the fileLoad method, and some of the methods in the manageLibrary class
+have the methods in the manage library class pass the results back to the movieMaster class as strings where the results are displayed
+Include other subclass as DVD, CDs and game consoles
+Create an arraylist to store the data as opposed to an array
+Create a class that manages the customers, which includes details of name, address, a list of items borrowed, late fees owing, late fees accumulated, and whether a suspension is in force
+
 
